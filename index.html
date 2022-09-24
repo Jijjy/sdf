@@ -117,7 +117,7 @@ float sdf(vec3 p)
             </select>
             <label>Particle Size</label>
             <input id="size" type="range" min="1" max="10" step="0.001" />
-            <button type="button">Update</button>
+            <button id="btn-update" type="button">Update</button>
             <label><input id="auto-update" type="checkbox" checked />&nbsp;Auto Update</label>
         </div>
     </div>
@@ -371,6 +371,7 @@ float sdf(vec3 p)
         }, 5000);
 
         $('textarea').on('input', debouncedRegenerate);
+        $('#btn-update').on('click', regenerate);
         regenerate();
 
         $('#size').on('input', e => {
