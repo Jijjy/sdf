@@ -118,10 +118,13 @@ float sdf(vec3 p)
             <label>Particle Size</label>
             <input id="size" type="range" min="1" max="10" step="0.001" />
             <button type="button">Update</button>
+            <button type="button">Update</button>
+            <label><input id="auto-update" type="checkbox" checked />&nbsp;Auto Update</label>
         </div>
     </div>
     <div id="container"></div>
     <script>
+        const $ = function (s) { const el = $(s); el.on = el.addEventListener; return el; }
         function init(data, colors, zoom) {
             let container, camera, scene, renderer, points;
             container = document.getElementById('container');
@@ -306,7 +309,7 @@ float sdf(vec3 p)
         const sdline = 'float sdLine(vec3 p,vec3 a,vec3 b){vec3 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return length(pa-ba*h);}';
 
         console.error = window.onerror = function (e) {
-            document.querySelector('#error').innerHTML += e + '\r\n';
+            $('#error').innerHTML += e + '\r\n';
         }
 
         var renderer;
@@ -323,14 +326,14 @@ float sdf(vec3 p)
             };
         };
 
-        document.querySelector('textarea').value = atob(location.hash.substring(1));
+        $('textarea').value = atob(location.hash.substring(1));
 
         var zoom = 1;
-        const regenerate = debounce(() => {
-            document.querySelector('#error').innerHTML = '';
-            location.hash = '#' + btoa(document.querySelector('textarea').value);
+        function regenerate() {
+            $('#error').innerHTML = '';
+            location.hash = '#' + btoa($('textarea').value);
             try {
-                var rez = parseInt(document.querySelector('#rez').value);
+                var rez = parseInt($('#rez').value);
                 buildPF({
                     rez: rez,
                     thresh: 0.01,
@@ -342,10 +345,10 @@ float sdf(vec3 p)
                         cnoise3,
                         sdline,
                     ].join('\r\n'),
-                    sdfSrc: document.querySelector('textarea').value
+                    sdfSrc: $('textarea').value
                 }, d => {
                     if (d && d.length && d.length > 30000000) {
-                        document.querySelector('#error').innerHTML += 'Too much data\r\n';
+                        $('#error').innerHTML += 'Too much data\r\n';
                         return;
                     }
 
@@ -358,20 +361,26 @@ float sdf(vec3 p)
                     }
                 });
             } catch (e) {
-                document.querySelector('#error').innerHTML += e + '\r\n';
+                $('#error').innerHTML += e + '\r\n';
             }
-        }, 1000);
+        }
 
-        document.querySelector('textarea').addEventListener('input', regenerate);
+        const debouncedRegenerate = debounce(() => {
+            if (!$('#auto-update').checked)
+                return;
+            regenerate();
+        }, 5000);
+
+        $('textarea').on('input', debouncedRegenerate);
         regenerate();
 
-        document.querySelector('#size').addEventListener('input', e => {
+        $('#size').on('input', e => {
             renderer.size(e.target.value);
         });
 
         document.addEventListener('wheel', e => {
             zoom = Math.min(3, Math.max(0.5, zoom + 0.001 * e.deltaY));
-            renderer.zoom(zoom * 3 * parseInt(document.querySelector('#rez').value));
+            renderer.zoom(zoom * 3 * parseInt($('#rez').value));
         }, { passive: false });
     </script>
 </body>
