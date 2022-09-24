@@ -323,10 +323,12 @@ float sdf(vec3 p)
             };
         };
 
+        document.querySelector('textarea').value = atob(location.hash.substring(1));
+
         var zoom = 1;
         const regenerate = debounce(() => {
             document.querySelector('#error').innerHTML = '';
-            location.hash = '#' + btoa(document.querySelector('textarea').value.replace(/\s+/g, ' '));
+            location.hash = '#' + btoa(document.querySelector('textarea').value);
             try {
                 var rez = parseInt(document.querySelector('#rez').value);
                 buildPF({
