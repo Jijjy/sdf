@@ -420,6 +420,7 @@
       const sdline =
         'float sdLine(vec3 p,vec3 a,vec3 b){vec3 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.0,1.0);return length(pa-ba*h);}';
 
+      const worley = 'vec2 hash22(vec2 p){return fract(cos(p*mat2(-64.2,71.3,81.4,-29.8))*8321.3);}vec3 worley(vec2 q){float f1=9e9;float f2=f1;for(int i=-1;i<2;i++){for(int j=-1;j<2;j++){vec2 p=floor(q)+vec2(i,j);vec2 h=hash22(p);vec2 g=p+0.5+0.5*sin(h*12.6);float d=f1;d=distance(g,q);if(d<f2){f2=d;}if(d<f1){f2=f1;f1=d;}}}return vec3(f1,f2,f2-f1);}';
       console.error = window.onerror = function (e) {
         $('#error').innerHTML += e + '\r\n';
       };
@@ -458,6 +459,7 @@
                 cnoise,
                 cnoise3,
                 sdline,
+                worley
               ].join('\r\n'),
               sdfSrc: $('textarea').value,
             },
